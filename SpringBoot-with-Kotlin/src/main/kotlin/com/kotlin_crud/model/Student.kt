@@ -8,5 +8,11 @@ data class Student (
     @Id
     val studentId:String?=null,
     var studentName:String?,
-    var email:String?
+    var rollNo:String?,
+    var joinedClass:Int?,
+    var dob:String?,
+    var doj:String?,
+    var joiningTime:String?,
+    var email:String,
+    var phoneNumber:String
 )

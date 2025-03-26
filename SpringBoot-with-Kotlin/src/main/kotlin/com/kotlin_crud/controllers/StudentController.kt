@@ -2,6 +2,7 @@ package com.kotlin_crud.controllers
 
 import com.kotlin_crud.model.Student
 import com.kotlin_crud.services.StudentService
+import com.kotlin_crud.services.twilioservice.impl.TwilioService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/students")
-class StudentController(private val studentService: StudentService) {
+class StudentController(private val studentService: StudentService,private val twilioService: TwilioService) {
 
     private var logger:Logger = LoggerFactory.getLogger(StudentController::class.java)
     @GetMapping
@@ -36,6 +37,14 @@ class StudentController(private val studentService: StudentService) {
     @PostMapping
     fun addStudent(@RequestBody student: Student):ResponseEntity<Student>{
         val savedStudent:Student = studentService.addStudent(student)
+
+        val studentId = savedStudent.studentId
+        val rollNumber = savedStudent.rollNo
+        val registeredNumber = savedStudent.phoneNumber
+        val doj = savedStudent.doj
+
+        val message = "Registration success RegisteredId:$registeredNumber"
+        twilioService.sendSingleSMS(registeredNumber,message)
         return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent)
     }
 

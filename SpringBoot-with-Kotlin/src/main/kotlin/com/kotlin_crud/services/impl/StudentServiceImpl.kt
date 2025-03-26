@@ -7,6 +7,9 @@ import com.kotlin_crud.services.StudentService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.Date
 import java.util.UUID
 
 @Service
@@ -25,7 +28,13 @@ class StudentServiceImpl(private val studentRepo:StudentRepo):StudentService {
 
     override fun addStudent(student: Student):Student {
         val id:String = UUID.randomUUID().toString()
-        val newStudent = student.copy(studentId = id)
+        val rollNo = UUID.randomUUID().toString()
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val dateOfJoining = dateFormat.format(Date())
+        logger.info("joining date created {}",dateOfJoining)
+        val joiningTime = Instant.now().epochSecond.toString()
+        logger.info("joining time in seconds: {}",joiningTime)
+        val newStudent = student.copy(studentId = id,rollNo=rollNo, doj = dateOfJoining, joiningTime = joiningTime)
         return studentRepo.save(newStudent)
     }
 
@@ -37,8 +46,12 @@ class StudentServiceImpl(private val studentRepo:StudentRepo):StudentService {
         val updatedStudent = existingStudent.copy(
             studentId = existingStudent.studentId,
             studentName = student.studentName?:existingStudent.studentName,
+            rollNo = existingStudent.rollNo,
+            joinedClass = student.joinedClass?:existingStudent.joinedClass,
+            dob = student.dob?:existingStudent.dob,
+            doj = student.doj?:existingStudent.doj,
+            joiningTime = existingStudent.joiningTime,
             email = student.email?:existingStudent.email
-
         )
         logger.info("updated student {}",student)
        return studentRepo.save(updatedStudent)
